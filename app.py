@@ -13,8 +13,8 @@ df["year"] = df["date"].dt.year
 
 def load_overall_analysis():
     st.title("Overall Analysis")
-    col1, col2, col3, col4 = st.columns(4)
 
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         # Total investment
         total = round(df["amount"].sum())
@@ -47,10 +47,65 @@ def load_overall_analysis():
 
         temp_df["x-axis"] = temp_df["year"].astype("str") + "-" + temp_df["month"].astype("str")
 
-        fig, ax = plt.subplots()
-        ax.plot(temp_df["x-axis"], temp_df["amount"])
+        fig5, ax5 = plt.subplots()
+        ax5.plot(temp_df["x-axis"], temp_df["amount"])
 
-        st.pyplot(fig)
+        st.pyplot(fig5)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        # Sector analysis(Top sector)
+        st.header("Top Sector/Investment Vertical")
+        select_option = st.selectbox("Select One", ["Count", "Total"])
+        if select_option == "Count":
+            sector = df.groupby("vertical")["investor"].count()
+
+            fig6, ax6 = plt.subplots()
+            ax6.pie(sector, labels=sector.index, autopct="%0.01f%%")
+
+            st.pyplot(fig6)
+
+        else:
+            sector = df.groupby("vertical")["amount"].sum()
+
+            fig7, ax7 = plt.Subplot()
+            ax7.pie(sector, labels= sector.index, autopct="%0.01f%%")
+
+            st.pyplot(fig7)
+
+    with col2:
+        # Round of funding
+        st.header("Round of Funding")
+        round_funding = df.groupby("round")["investor"].count()
+
+        fig8, ax8 = plt.subplots()
+        ax8.pie(round_funding, labels=round_funding.index, autopct="%0.01f%%")
+
+        st.pyplot(fig8)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        # City of funding
+        st.header("City of Funding")
+        city_funding = round(df.groupby("city")["amount"].sum())
+
+        fig9, ax9 = plt.subplots()
+        ax9.pie(city_funding, labels= city_funding.index, autopct="%0.01f%%")
+
+        st.pyplot(fig9)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        # Top Startup
+        st.header("Top Startups")
+        top_startup = df.groupby("startup")["amount"].sum().sort_values(ascending=False).head()
+        st.dataframe(top_startup)
+
+    with col2:
+        # Top Investor
+        st.header("Top Investor")
+        top_investor = round(df.groupby("investor")["amount"].sum().sort_values(ascending=False).head(5))
+        st.dataframe(top_investor)
 
 
 def load_investor_details(investor):
